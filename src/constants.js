@@ -1,4 +1,4 @@
-const WELCOME_GIF = 'https://i.imgur.com/B1oETys.gif';
+const WELCOME_GIF = 'https://i.imgur.com/0jv4XEN.gif';
 
 const GIFS_LANG = {
   fr: 'https://i.imgur.com/LUFaQ9t.gif',
@@ -7,6 +7,26 @@ const GIFS_LANG = {
   ru: 'https://i.imgur.com/w2WvY20.gif'
 };
 
+const FREE_ANSWER_GIFS = {
+  scama: {
+    fr: 'https://i.imgur.com/XfxfQO1.gif',
+    en: 'https://i.imgur.com/QPNocMo.gif',
+    zh: 'https://i.imgur.com/StJPtCH.gif',
+    ru: 'https://i.imgur.com/N0CiobK.gif'
+  },
+  letter: {
+    fr: 'https://i.imgur.com/PxgocPx.gif',
+    en: 'https://i.imgur.com/WkNol6B.gif',
+    zh: 'https://i.imgur.com/xqrOMcT.gif',
+    ru: 'https://i.imgur.com/q1jCNq1.gif'
+  },
+  bot: {
+    fr: 'https://i.imgur.com/xGSsMWS.gif',
+    en: 'https://i.imgur.com/3FyHb10.gif',
+    zh: 'https://i.imgur.com/8PbeXtA.gif',
+    ru: 'https://i.imgur.com/KyqdwXd.gif'
+  }
+};
 const TEXTS = {
   fr: {
     welcomeProject: "Choisissez le projet :",
@@ -41,5 +61,6 @@ const TEXTS = {
 module.exports = {
   WELCOME_GIF,
   GIFS_LANG,
+  FREE_ANSWER_GIFS,
   TEXTS
 };
