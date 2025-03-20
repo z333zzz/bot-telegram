@@ -1,4 +1,4 @@
-// src/handlers/callbackQueryHandler.js
+// src/handlers/callbackHandler.js
 
 const { GIFS_LANG, FREE_ANSWER_GIFS, TEXTS } = require('../constants');
 const userStates = require('../state');
@@ -6,7 +6,8 @@ const userStates = require('../state');
 const callbackQueryHandler = async (callbackQuery, bot) => {
   // Vérifier que callbackQuery.message existe
   if (!callbackQuery.message) {
-    console.warn('Callback query without message:', callbackQuery);
+    // Log commenté pour éviter le bruit en production
+    // console.warn('Callback query without message:', callbackQuery);
     await bot.answerCallbackQuery(callbackQuery.id, {
       text: "Aucune action disponible.",
       show_alert: false
