@@ -1,13 +1,17 @@
-// src/handlers/callbackHandler.js
+// src/handlers/callbackQueryHandler.js
 
 const { GIFS_LANG, FREE_ANSWER_GIFS, TEXTS } = require('../constants');
 const userStates = require('../state');
 
 const callbackQueryHandler = async (callbackQuery, bot) => {
-  // Vérifier que le callbackQuery possède bien une propriété "message"
+  // Vérifier que callbackQuery.message existe
   if (!callbackQuery.message) {
-    console.error('Callback query without message:', callbackQuery);
-    return; // On arrête le traitement si "message" est absent
+    console.warn('Callback query without message:', callbackQuery);
+    await bot.answerCallbackQuery(callbackQuery.id, {
+      text: "Aucune action disponible.",
+      show_alert: false
+    });
+    return;
   }
 
   const chatId = callbackQuery.message.chat.id;
