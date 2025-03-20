@@ -1,19 +1,32 @@
+// src/bot.js
 const TelegramBot = require('node-telegram-bot-api');
-const { botToken } = require('./config');
-
+const { BOT_TOKEN } = require('./config');
+const callbackQueryHandler = require('./handlers/callbackHandler');
 const startHandler = require('./handlers/startHandler');
-const callbackHandler = require('./handlers/callbackHandler');
 const messageHandler = require('./handlers/messageHandler');
 
-// Objet pour suivre l'état de chaque utilisateur
-const userStates = {};
+if (!BOT_TOKEN) {
+  console.error("BOT_TOKEN n'est pas défini dans le fichier .env");
+  process.exit(1);
+}
 
-// Création du bot
-const bot = new TelegramBot(botToken, { polling: true });
+const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
-// Initialisation des gestionnaires
-startHandler(bot, userStates);
-callbackHandler(bot, userStates);
-messageHandler(bot, userStates);
+// Commande /start
+bot.onText(/\/start/, (msg) => {
+  startHandler(msg, bot).catch(console.error);
+});
+
+// Gestion des callback queries
+bot.on('callback_query', (callbackQuery) => {
+  callbackQueryHandler(callbackQuery, bot).catch(console.error);
+});
+
+// Gestion des messages textes (réponses libres)
+bot.on('message', (msg) => {
+  // Ignorer les commandes pour éviter les doublons
+  if (msg.text && msg.text.startsWith('/')) return;
+  messageHandler(msg, bot);
+});
 
 console.log("Bot lancé : en attente des interactions...");

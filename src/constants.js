@@ -1,3 +1,4 @@
+// src/constants.js
 const WELCOME_GIF = 'https://i.imgur.com/0jv4XEN.gif';
 
 const GIFS_LANG = {
@@ -27,6 +28,7 @@ const FREE_ANSWER_GIFS = {
     ru: 'https://i.imgur.com/KyqdwXd.gif'
   }
 };
+
 const TEXTS = {
   fr: {
     welcomeProject: "Choisissez le projet :",

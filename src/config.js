@@ -1,6 +1,8 @@
-require('dotenv').config();
+// src/config.js
+const dotenv = require('dotenv');
+dotenv.config();
 
 module.exports = {
-  botToken: process.env.BOT_TOKEN,
-  adminChatId: process.env.ADMIN_CHAT_ID
+  BOT_TOKEN: process.env.BOT_TOKEN,
+  ADMIN_CHAT_ID: process.env.ADMIN_CHAT_ID
 };
