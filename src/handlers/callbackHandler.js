@@ -1,74 +1,80 @@
-const { GIFS_LANG, TEXTS } = require('../constants');
+// src/handlers/callbackQueryHandler.js
 
-const callbackHandler = (bot, userStates) => {
-  bot.on('callback_query', async (callbackQuery) => {
-    const data = callbackQuery.data;
-    const chatId = callbackQuery.message.chat.id;
-    const msgId = callbackQuery.message.message_id;
+const { GIFS_LANG, FREE_ANSWER_GIFS, TEXTS } = require('../constants');
+const userStates = require('../state');
 
-    // Choix de la langue
-    if (data.startsWith("lang_")) {
-      const chosenLang = data.split("_")[1];
+const callbackQueryHandler = async (callbackQuery, bot) => {
+  const data = callbackQuery.data;
+  const chatId = callbackQuery.message.chat.id;
+  const msgId = callbackQuery.message.message_id;
 
-      // Supprimer l'ancien clavier
-      await bot.editMessageReplyMarkup({ inline_keyboard: [] }, {
-        chat_id: chatId,
-        message_id: msgId
-      });
+  // 1) Choix de la langue (ex: "lang_fr", "lang_en", etc.)
+  if (data.startsWith("lang_")) {
+    const chosenLang = data.split("_")[1];
 
-      // Sauvegarder la langue choisie
-      userStates[chatId] = {
-        language: chosenLang,
-        projectChosen: null,
-        awaitingAnswer: false,
-        answers: []
-      };
+    // Supprimer l'ancien clavier
+    await bot.editMessageReplyMarkup({ inline_keyboard: [] }, {
+      chat_id: chatId,
+      message_id: msgId
+    });
 
-      // Envoyer le GIF + question de projet
-      await bot.sendAnimation(chatId, GIFS_LANG[chosenLang], {
-        caption: TEXTS[chosenLang].welcomeProject,
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: "Scama",  callback_data: "proj_scama" },
-              { text: "Letter", callback_data: "proj_letter" },
-              { text: "Bot",    callback_data: "proj_bot" }
-            ]
+    // Stocker la langue choisie dans l'état
+    userStates[chatId] = {
+      language: chosenLang,
+      projectChosen: null,
+      awaitingAnswer: false,
+      answers: []
+    };
+
+    // Envoyer le GIF associé à la langue + texte "Choisissez le projet"
+    await bot.sendAnimation(chatId, GIFS_LANG[chosenLang], {
+      caption: TEXTS[chosenLang].welcomeProject,
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: "Scama",  callback_data: "proj_scama" },
+            { text: "Letter", callback_data: "proj_letter" },
+            { text: "Bot",    callback_data: "proj_bot" }
           ]
-        }
-      });
-    }
-    // Choix du projet
-    else if (data.startsWith("proj_")) {
-      const project = data.split("_")[1];
-      const state = userStates[chatId];
-      if (!state) return;
-
-      // Supprimer l'ancien clavier
-      await bot.editMessageReplyMarkup({ inline_keyboard: [] }, {
-        chat_id: chatId,
-        message_id: msgId
-      });
-
-      // Sauvegarder le projet choisi
-      state.projectChosen = project;
-
-      // Déterminer le GIF et la question en fonction du projet
-      let gif = GIFS_LANG[state.language] || GIFS_LANG['fr'];
-      let question = "";
-
-      if (project === "scama") {
-        question = TEXTS[state.language].questionScama;
-      } else if (project === "letter") {
-        question = TEXTS[state.language].questionLetter;
-      } else if (project === "bot") {
-        question = TEXTS[state.language].questionBot;
+        ]
       }
+    });
+  }
 
-      await bot.sendAnimation(chatId, gif, { caption: question });
-      state.awaitingAnswer = true;
+  // 2) Choix du projet (ex: "proj_scama", "proj_letter", "proj_bot")
+  else if (data.startsWith("proj_")) {
+    const project = data.split("_")[1];
+    const state = userStates[chatId];
+    if (!state) return;
+
+    // Supprimer l'ancien clavier
+    await bot.editMessageReplyMarkup({ inline_keyboard: [] }, {
+      chat_id: chatId,
+      message_id: msgId
+    });
+
+    // Stocker le projet choisi dans l'état
+    state.projectChosen = project;
+
+    // Déterminer la question selon le projet
+    let question = "";
+    if (project === "scama") {
+      question = TEXTS[state.language].questionScama;
+    } else if (project === "letter") {
+      question = TEXTS[state.language].questionLetter;
+    } else if (project === "bot") {
+      question = TEXTS[state.language].questionBot;
     }
-  });
+
+    // Récupérer le GIF spécifique à ce projet et à la langue
+    const gifForProject = FREE_ANSWER_GIFS[project][state.language];
+
+    // Envoyer ce GIF avec la question en légende
+    await bot.sendAnimation(chatId, gifForProject, { caption: question });
+
+    // Mettre à jour l'état pour indiquer qu'on attend une réponse en texte libre
+    state.awaitingAnswer = true;
+  }
 };
 
-module.exports = callbackHandler;
+module.exports = callbackQueryHandler;
