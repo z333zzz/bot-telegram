@@ -1,16 +1,21 @@
-// src/handlers/callbackQueryHandler.js
+// src/handlers/callbackHandler.js
 
 const { GIFS_LANG, FREE_ANSWER_GIFS, TEXTS } = require('../constants');
 const userStates = require('../state');
 
 const callbackQueryHandler = async (callbackQuery, bot) => {
-  const data = callbackQuery.data;
+  // Vérifier que le callbackQuery possède bien une propriété "message"
+  if (!callbackQuery.message) {
+    console.error('Callback query without message:', callbackQuery);
+    return; // On arrête le traitement si "message" est absent
+  }
+
   const chatId = callbackQuery.message.chat.id;
   const msgId = callbackQuery.message.message_id;
 
   // 1) Choix de la langue (ex: "lang_fr", "lang_en", etc.)
-  if (data.startsWith("lang_")) {
-    const chosenLang = data.split("_")[1];
+  if (callbackQuery.data.startsWith("lang_")) {
+    const chosenLang = callbackQuery.data.split("_")[1];
 
     // Supprimer l'ancien clavier
     await bot.editMessageReplyMarkup({ inline_keyboard: [] }, {
@@ -40,10 +45,9 @@ const callbackQueryHandler = async (callbackQuery, bot) => {
       }
     });
   }
-
   // 2) Choix du projet (ex: "proj_scama", "proj_letter", "proj_bot")
-  else if (data.startsWith("proj_")) {
-    const project = data.split("_")[1];
+  else if (callbackQuery.data.startsWith("proj_")) {
+    const project = callbackQuery.data.split("_")[1];
     const state = userStates[chatId];
     if (!state) return;
 
