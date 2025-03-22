@@ -1,4 +1,5 @@
 // src/constants.js
+
 const WELCOME_GIF = 'https://i.imgur.com/0jv4XEN.gif';
 
 const GIFS_LANG = {
@@ -48,12 +49,19 @@ const TEXTS = {
   }
 };
 
-// Bouton final qui ouvre une conversation privée avec vous (ici, remplacez 'jsakai_off' par votre username Telegram)
-const FINAL_CONTACT_BUTTON = {
+// Boutons finaux : "Contactez-moi" (ouvre un lien) et "Fermer le bot" (callback)
+const CONTACT_BUTTONS = {
   fr: { text: "Contactez-moi", url: "https://t.me/jsakai_off" },
   en: { text: "Contact me", url: "https://t.me/jsakai_off" },
   zh: { text: "联系我", url: "https://t.me/jsakai_off" },
   ru: { text: "Свяжитесь со мной", url: "https://t.me/jsakai_off" }
+};
+
+const CLOSE_BOT_BUTTONS = {
+  fr: { text: "Fermer le bot", callback_data: "close_bot" },
+  en: { text: "Close bot", callback_data: "close_bot" },
+  zh: { text: "关闭机器人", callback_data: "close_bot" },
+  ru: { text: "Закрыть бота", callback_data: "close_bot" }
 };
 
 module.exports = {
@@ -61,5 +69,6 @@ module.exports = {
   GIFS_LANG,
   FREE_ANSWER_GIFS,
   TEXTS,
-  FINAL_CONTACT_BUTTON
+  CONTACT_BUTTONS,
+  CLOSE_BOT_BUTTONS
 };

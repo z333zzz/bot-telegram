@@ -7,19 +7,19 @@ const startHandler = async (msg, bot) => {
   const chatId = msg.chat.id;
   const userName = msg.from.first_name || "Utilisateur";
 
-  // Si une session existe déjà pour cet utilisateur, on bloque une nouvelle exécution
+  // Si l'utilisateur a déjà démarré une session, on bloque
   if (userStates[chatId]) {
     await bot.sendMessage(chatId, "Vous avez déjà démarré le bot.");
     return;
   }
 
-  // Notifier l'administrateur
+  // Notifier l'admin
   await bot.sendMessage(ADMIN_CHAT_ID, `Nouvel utilisateur : ${userName} (chat_id: ${chatId}) a démarré le bot.`);
 
-  // Initialiser l'état de la session
+  // Initialiser l'état
   userStates[chatId] = {};
 
-  // Envoyer le GIF de bienvenue avec le clavier de choix de langue et un bouton "Fermer le bot"
+  // Envoyer le GIF de bienvenue
   await bot.sendAnimation(chatId, WELCOME_GIF, {
     caption: "Choisissez votre langue / Choose your language :",
     reply_markup: {
