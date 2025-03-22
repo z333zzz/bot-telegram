@@ -1,5 +1,5 @@
 // src/handlers/callbackHandler.js
-const { GIFS_LANG, FREE_ANSWER_GIFS, TEXTS } = require('../constants');
+const { GIFS_LANG, TEXTS, FINAL_CONTACT_BUTTON } = require('../constants');
 const userStates = require('../state');
 
 const callbackQueryHandler = async (callbackQuery, bot) => {
@@ -18,20 +18,11 @@ const callbackQueryHandler = async (callbackQuery, bot) => {
   const msgId = callbackQuery.message.message_id;
   const data = callbackQuery.data;
 
-  // Cas : fermeture du bot
+  // Bouton "Fermer le bot" depuis l'écran de démarrage
   if (data === "close_bot") {
-    // Supprimer l'état de l'utilisateur (fermer la session)
     delete userStates[chatId];
-    // Retirer le clavier inline
-    await bot.editMessageReplyMarkup({ inline_keyboard: [] }, {
-      chat_id: chatId,
-      message_id: msgId
-    });
-    // Envoyer un message de confirmation de fermeture
-    await bot.sendMessage(
-      chatId,
-      "Bot fermé. Pour redémarrer, tapez /start. / Bot closed. To restart, type /start."
-    );
+    await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: msgId });
+    await bot.sendMessage(chatId, "Bot fermé. Pour redémarrer, tapez /start.");
     await bot.answerCallbackQuery(callbackQuery.id);
     return;
   }
@@ -39,22 +30,11 @@ const callbackQueryHandler = async (callbackQuery, bot) => {
   // 1) Choix de la langue (ex: "lang_fr", "lang_en", etc.)
   if (data.startsWith("lang_")) {
     const chosenLang = data.split("_")[1];
-
-    // Supprimer l'ancien clavier
-    await bot.editMessageReplyMarkup({ inline_keyboard: [] }, {
-      chat_id: chatId,
-      message_id: msgId
-    });
-
-    // Stocker la langue choisie dans l'état
+    await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: msgId });
     userStates[chatId] = {
       language: chosenLang,
-      projectChosen: null,
-      awaitingAnswer: false,
-      answers: []
+      projectChosen: null
     };
-
-    // Envoyer le GIF associé à la langue + texte de bienvenue
     await bot.sendAnimation(chatId, GIFS_LANG[chosenLang], {
       caption: TEXTS[chosenLang].welcomeProject,
       reply_markup: {
@@ -74,26 +54,18 @@ const callbackQueryHandler = async (callbackQuery, bot) => {
     const state = userStates[chatId];
     if (!state) return;
     state.projectChosen = project;
-
-    // Envoyer le GIF spécifique au projet et la question (pour la réponse libre ou la suite du traitement)
-    const question =
-      project === "scama"
-        ? TEXTS[state.language].questionScama
-        : project === "letter"
-        ? TEXTS[state.language].questionLetter
-        : project === "bot"
-        ? TEXTS[state.language].questionBot
-        : "";
-    const gifForProject = FREE_ANSWER_GIFS[project][state.language];
-
-    await bot.editMessageReplyMarkup({ inline_keyboard: [] }, {
-      chat_id: chatId,
-      message_id: msgId
+    await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: chatId, message_id: msgId });
+    // Envoi du message final avec le bouton pour ouvrir la conversation privée
+    await bot.sendMessage(chatId, "Merci pour votre sélection. Cliquez ci-dessous pour me contacter :", {
+      reply_markup: {
+        inline_keyboard: [
+          [ FINAL_CONTACT_BUTTON[state.language] ]
+        ]
+      }
     });
-    await bot.sendAnimation(chatId, gifForProject, { caption: question });
-    state.awaitingAnswer = true;
+    // Optionnel : supprimer l'état si la session est terminée
+    delete userStates[chatId];
   }
-  // Vous pouvez ajouter ici d'autres branches pour gérer d'autres callbacks si nécessaire...
 };
 
 module.exports = callbackQueryHandler;

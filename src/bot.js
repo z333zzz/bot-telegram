@@ -22,9 +22,8 @@ bot.on('callback_query', (callbackQuery) => {
   callbackQueryHandler(callbackQuery, bot).catch(console.error);
 });
 
-// Gestion des messages textes (réponses libres)
+// Gestion des messages textes (si nécessaire)
 bot.on('message', (msg) => {
-  // Ignorer les commandes pour éviter les doublons
   if (msg.text && msg.text.startsWith('/')) return;
   messageHandler(msg, bot);
 });
