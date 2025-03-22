@@ -17,11 +17,9 @@ const startHandler = async (msg, bot) => {
   await bot.sendMessage(ADMIN_CHAT_ID, `Nouvel utilisateur : ${userName} (chat_id: ${chatId}) a démarré le bot.`);
 
   // Initialiser l'état de l'utilisateur pour la session en cours
-  userStates[chatId] = {
-    // On peut stocker ici d'autres informations si nécessaire
-  };
+  userStates[chatId] = {};
 
-  // Envoyer le GIF de bienvenue avec le clavier de choix de langue
+  // Envoyer le GIF de bienvenue avec le clavier de choix de langue ET un bouton pour fermer le bot
   await bot.sendAnimation(chatId, WELCOME_GIF, {
     caption: "Choisissez votre langue / Choose your language :",
     reply_markup: {
@@ -33,6 +31,9 @@ const startHandler = async (msg, bot) => {
         [
           { text: "中文", callback_data: "lang_zh" },
           { text: "Русский", callback_data: "lang_ru" }
+        ],
+        [
+          { text: "Fermer le bot / Close Bot / 关闭机器人 / Закрыть бота", callback_data: "close_bot" }
         ]
       ]
     }
